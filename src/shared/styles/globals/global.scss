@@ -1,0 +1,21 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css');
+
+html, body {
+  padding: 0;
+  margin: 0;
+
+  width: 100%;
+  min-width: 320px;
+
+  touch-action: manipulation;
+}
+
+html {
+  font-size: 16px;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}

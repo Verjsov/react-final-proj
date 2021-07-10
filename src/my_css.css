@@ -1,0 +1,38 @@
+.item
+{
+    width:100px;
+    height:50px;
+    border:1px solid grey;
+    text-align: center;
+    float:left;
+}
+.w-50
+{
+    width:50px;
+}
+.w-100
+{
+    width:100px;
+}
+.w-300
+{
+    width:300px;
+}
+.w-150
+{
+    width:150px;
+}
+.w-500
+{
+    width:500px;
+    border:1px solid green;
+}
+.bw
+{
+    font-weight:bold;
+}
+.title
+{
+    font-size:14px;
+    font-weight:bold;
+}
