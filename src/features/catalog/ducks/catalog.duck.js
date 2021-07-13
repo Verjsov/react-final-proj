@@ -9,7 +9,9 @@ const slice = createSlice({
   initialState: {
     isOpen: false,
     isLoading: false,
-    data: null,
+    cats: [],
+    catsNames: [],
+    catsStates: [],
     error: null,
     categories:[]
   },
@@ -18,12 +20,13 @@ const slice = createSlice({
       state.isLoading = true;
     },
     loadEnd: (state, action) => {
-      let { payload: { data = [], error = null } } = action;
+      let { payload: { cats = [],catsNames = [],catsStates= [] , error = null } } = action;
       state.isLoading = false;
-      state.data = data;
+      state.cats = cats;
+      state.catsNames = catsNames;
+      state.catsStates = catsStates;
       state.error = error;
     },
-    loadOld: () => {},
     load: (state, action)=>{},
     setIsOpen: (s, a) => {
       s.isOpen = a.payload.value;
@@ -37,7 +40,9 @@ export const { loadStart, loadEnd, setIsOpen, load } = slice.actions;
 export const reducer = slice.reducer;
 
 export const selectIsLoading = (s) => s[namespace].isLoading;
-export const selectData = (s) => s[namespace].data;
+export const selectCats = (s) => s[namespace].cats;
+export const selectCatsName = (s) => s[namespace].catsNames;
+export const selectCatsState = (s) => s[namespace].catsStates;
 export const selectError = (s) => s[namespace].error;
 export const selectIsOpen = (s) => s[namespace].isOpen;
 
@@ -45,17 +50,35 @@ function* loadDataSaga() {
   yield put(loadStart());
 
   let error = null,
-      data = [];
+      cats = [],
+      catsNames = [],
+      catsStates = [];
 
   try {
     let response = yield call(fetch, "https://60bb880442e1d00017620c95.mockapi.io/category");
-    data = yield call(() => response.json());
+    const dataCat = yield call(() => response.json());
+
+    dataCat.forEach(function(category){
+      cats.push(category.id);
+      catsNames.push(category.name);
+    });
+    cats.forEach(function(cat,i){
+      let st = {
+        id:cat,
+        state: false,
+      };
+      catsStates.push(st);
+    });
+
+
   } catch (e) {
     error = e.message;
   }
 
   yield put(loadEnd({
-    data,
+    cats,
+    catsNames,
+    catsStates,
     error,
   }));
 }
@@ -64,11 +87,9 @@ function* loadDataSaga() {
 
 export const sagas = function* () {
 
-
+  console.log('----------------- saga started');
   yield all([
-    // put your sagas here
     takeEvery(load, loadDataSaga),
-
   ]);
 };
 

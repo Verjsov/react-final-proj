@@ -9,6 +9,7 @@ import { getList } from "../../catalog/api/CatalogAPI";
 import "../../../my_css.css";
 import Button from '@material-ui/core/Button';
 import {Link} from "react-router-dom";
+import {NumberInput} from "../components/NumberInput";
 
 
 
@@ -32,10 +33,8 @@ export function CartPage() {
   const numProducts = useSelector(CartDuck.selectNumProducts);
   const total = useSelector(CartDuck.selectTotal);
 
-
-  // получим ссылку на метод dispatch объекта store
   const dispatch = useDispatch();
-  const removeProduct = (value) => dispatch(CartDuck.removeItem(value)); // сгенерируем функции для действий
+  const removeProduct = (value) => dispatch(CartDuck.removeItem(value));
   const updateProduct = (id,qty) => dispatch(CartDuck.updateItem(id,qty));
 
   const handleChangeInput = (event) => {
@@ -45,7 +44,7 @@ export function CartPage() {
     updateProduct(name,val);
 
   }
-
+ console.log(selectedProducts);
   return (
     <div className="page">
       {
@@ -67,8 +66,9 @@ export function CartPage() {
                       <div className="item w-50"><img width="50px" height="50px" src={product.photo}/></div>
                       <div className="item w-300">{product.title}</div>
                       <div className="item w-100">{product.price}</div>
-                      <div className="item w-100"><input style={{width: '95%'}} onBlur={handleChangeInput} type="text"
-                                                         name={product.id} defaultValue={selectItems[i].qty}/></div>
+                      <div className="item w-100">
+                        <NumberInput id={product.id} value={Number(selectItems[i].qty)} onChange={updateProduct} />
+                      </div>
                       <div className="item w-100" id={i}>{product.price * selectItems[i].qty}</div>
                       <Button onClick={() => removeProduct(product.id)} exact component={Link} variant="contained"
                               color="secondary">

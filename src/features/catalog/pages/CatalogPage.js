@@ -24,6 +24,7 @@ import * as CartDuck from "../../cart/ducks/cart.duck";
 import {Accordion, AccordionDetails, AccordionSummary} from "@material-ui/core";
 import Box from "@material-ui/core/Box";
 import Container from "@material-ui/core/Container";
+import {selectIsLoading} from "../ducks/catalog.duck";
 
 
 function ExpandMoreIcon() {
@@ -36,35 +37,40 @@ export function CatalogPage(classes) {
     const [categoriesNew,setCategoriesNew] = useState([]);
     const [mainCheckboxState,setMainCheckboxState] = useState(false);
     const [expanded, setExpanded] = useState(false);
-    const dataCat = useSelector(CatalogDuck.selectData);
-    let cats = [];
-    let catsNames = [];
-    dataCat.forEach(function(category){
-        cats.push(category.id);
-        catsNames.push(category.name);
-    });
+    //const dataCat = useSelector(CatalogDuck.selectData);
+
+    const loadCategory = useSelector(CatalogDuck.selectIsLoading);
 
 
-    let catStates = [];
-    cats.forEach(function(cat,i){
-        let st = {
-            id:cat,
-            state: false,
-        };
-        catStates.push(st);
-    });
+    const [categories,setCategories] = useState(useSelector(CatalogDuck.selectCats));
+    const [categoriesNames,setCategoriesNames] = useState(useSelector(CatalogDuck.selectCatsName));
+    const [chosenCategories,setChosenCategories] = useState(useSelector(CatalogDuck.selectCats));
+    const [categoriesStates,setCategoriesStates] = useState(useSelector(CatalogDuck.selectCatsState));
 
-    const [categories,setCategories] = useState(cats);
-    const [categoriesNames,setCategoriesNames] = useState(catsNames);
-    const [chosenCategories,setChosenCategories] = useState(cats);
-    const [categoriesStates,setCategoriesStates] = useState(catStates);
+/*
+    if (!loadCategory && dataCat !== null){
+        dataCat.forEach(function(category){
+            cats.push(category.id);
+            catsNames.push(category.name);
+        });
+        cats.forEach(function(cat,i){
+            let st = {
+                id:cat,
+                state: false,
+            };
+            catStates.push(st);
+        });
+    }
 
-    console.log(dataCat)
+ */
+
     const { data,error,isLoading } = useQuery("products", async () => {
         let { data } = await getList();
         setAllData(data);
         setCatalog(data);
     });
+
+
 
     const dispatch = useDispatch();
     const [isInStore,setIsInStore] = useState(false);
@@ -112,7 +118,7 @@ export function CatalogPage(classes) {
 
         let catStates = categoriesStates;
 
-        let index = catStates.findIndex((catState) => catState.id == category_id);
+        let index = catStates.findIndex((catState) => catState.id === category_id);
         catStates[index].state = val;
         setCategoriesStates(catStates);
 
@@ -155,16 +161,9 @@ export function CatalogPage(classes) {
 
     }
 
-    console.log(catalog);
-    console.log(dataCat.filter((el)=> {
-        console.log(el);
-        if ([{id:1}].includes(el.id))
-            return el
-    })
-    )
     return (
         <div className="page">
-            { isLoading ?
+            { isLoading && isLoading ?
                 <div>Loading...</div>
                 : error ?
                     <div>Something went wrong...</div>
@@ -356,12 +355,7 @@ export function CatalogPage(classes) {
                                                 className={"MuiTypography--subheading"}
                                                 variant={"caption"}
                                             >
-                                                Categories: {
-                                                (dataCat.filter((el) => {
-                                                    if (product.categories.includes(el.id)) {
-                                                        return el['name']
-                                                    }
-                                                })).join(',')
+                                                Categories:
                                             }
                                             </Typography>
                                             <Divider className={classes.divider} light />
